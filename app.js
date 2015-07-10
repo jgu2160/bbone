@@ -2,6 +2,7 @@ var app = {};
 
 // Models
 app.Beer = Backbone.Model.extend({
+    idAttribute: '_id',
     defaults: {
         name: '',
         likes: 0
@@ -11,7 +12,7 @@ app.Beer = Backbone.Model.extend({
 // Collections
 app.BeerList = Backbone.Collection.extend({
     model: app.Beer,
-    localStorage: new Store("backbone-todo")
+    url: "http://beer.fluentcloud.com/v1/beer",
 });
 
 app.beerList = new app.BeerList();
@@ -23,7 +24,7 @@ app.BeerView = Backbone.View.extend({
     render: function(){
         this.$el.html(this.template(this.model.toJSON()));
         this.input = this.$('.edit');
-        return this; // enable chained calls
+        return this;
     },
     initialize: function(){
         this.model.on('change', this.render, this);
@@ -51,14 +52,13 @@ app.BeerView = Backbone.View.extend({
     },
 });
 
-// renders the full list of todo items calling TodoView for each one.
 app.AppView = Backbone.View.extend({
     el: '#beerapp',
     initialize: function () {
         this.input = this.$('#new-beer');
         app.beerList.on('add', this.addAll, this);
         app.beerList.on('reset', this.addAll, this);
-        app.beerList.fetch(); // Loads list from local storage
+        app.beerList.fetch();
     },
     events: {
         'keypress #new-beer': 'createBeerOnEnter'
